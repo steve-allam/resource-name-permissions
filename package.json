@@ -1,0 +1,36 @@
+{
+  "name": "resource-name-permissions",
+  "version": "1.0.0",
+  "description": "Node.js library for Resource Name Permissions",
+  "main": "lib/index.js",
+  "author": "Niels Krijger <niels@kryger.nl>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nielskrijger/resource-name-permissions.git"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.0",
+    "babel-preset-latest": "^6.16.0",
+    "babel-register": "^6.18.0",
+    "chai": "^3.5.0",
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb": "^12.0.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.5.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-sourcemaps": "^2.2.0",
+    "mocha": "^2.5.3"
+  },
+  "scripts": {
+    "test": "mocha",
+    "prepublish": "gulp build && npm test"
+  },
+  "dependencies": {
+    "lodash": "^4.16.6"
+  }
+}
