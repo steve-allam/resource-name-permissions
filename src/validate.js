@@ -23,7 +23,7 @@ function validatePrivileges(privilegeString) {
   for (const privilege of privileges) {
     if (isNumeric(privilege)) {
       if (privilege < Math.min(...privilegeNumbers)) return false;
-      if (privilege > Math.max(...privilegeNumbers)) return false;
+      if (privilege >= Math.max(...privilegeNumbers) * 2) return false;
     } else if (!privilegeNames.includes(privilege)) {
       return false;
     }
