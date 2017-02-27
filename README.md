@@ -30,15 +30,15 @@ They are inspired by [Github's OAauth Scopes](https://developer.github.com/chang
 
 A Resource Name Permission consists of two components:
 
-1. **Identifier**.
+1. **Identifier**
 
-    The identifier specifies which resources the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special allowed characters are `/`, `:` and `*`.
+    The identifier specifies which resource(s) the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
 
     Both `/` and `:` serve the same purpose and enable you to hierarchically organize identifier names. Organizing identifiers is particularly useful in combination with wildcards. Whether you use `/` and/or `:` is entirely up to you.
 
-    The `*` wildcard matches zero or any characters excluding `/` and `:`, whereas `**` matches zero or any characters including `/` and `:`. The `**` is only valid when preceded and followed by a `/`, `:` or at the start/end of the identifier. A single wildcard `*` can be used anywhere within an identifier string.
+    The `*` wildcard matches any (or zero) characters excluding `/` and `:`, whereas `**` matches any (or zero) characters including `/` and `:`. The `**` is only valid when preceded and followed by a `/`, `:` or at the start/end of the identifier string. A single wildcard `*` can be used anywhere within an identifier string.
 
-    For example, to read a user comment with id `article/1234/comments/54` one of the following would grant access:
+    For example, to read a user comment with identifier `article/1234/comments/54` one of the following would grant access:
 
     ```
     article/1234/comments/54:read
@@ -57,7 +57,7 @@ A Resource Name Permission consists of two components:
     article/*:read
     ```
 
-2. **Privileges**.
+2. **Privileges**
 
     Privileges specify which operations are allowed on a resource. You can either specify these as a comma-separated set of names, a bitmask, or a combination thereof. For example, `create,read,update,delete`, `15` and `crud` are all equivalent. Privileges are fully customizable.
 
