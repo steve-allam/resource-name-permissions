@@ -1,9 +1,9 @@
-# Node URL Permission
+# Node.js Resource Name Permission
 
 This Node.js library facilitates formatting permissions for users, groups or any other security principal in the following way:
 
 ```
-<namespace>:<identifier>:<privileges>
+<identifier>:<privileges>
 ```
 
 **For example:**
@@ -30,7 +30,9 @@ They are inspired by [Github's OAauth Scopes](https://developer.github.com/chang
 
 A Resource Name Permission consists of three components:
 
-1. **Identifier**. The identifier specifies which resources the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
+1. **Identifier**.
+
+    The identifier specifies which resources the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
 
     Both `/` and `:` serve the same purpose and enable you to hierarchically organize identifiers. Organizing identifiers is particularly useful in combination with wildcards. Whether you use `/` or `:` is entirely up to you, the `/` better matches URLs and a `:` mimics URNs. You can even combine the two.
 
@@ -57,7 +59,9 @@ A Resource Name Permission consists of three components:
 
     Note that `**` is only valid when preceded and followed by a `/`, `:` or at the start of the permission. A normal wildcard `*` can be used anywhere within an identifier string.
 
-2. **Privileges**. Privileges specify which operations are allowed on a resource. You can either specify these as a comma-separated set of names, a bitmask, or a combination thereof (e.g. `create,read,update,delete`, `15` and `crud` are equivalent). Privileges are fully customizable.
+2. **Privileges**.
+
+    Privileges specify which operations are allowed on a resource. You can either specify these as a comma-separated set of names, a bitmask, or a combination thereof (e.g. `create,read,update,delete`, `15` and `crud` are all equivalent). Privileges are fully customizable.
 
     The privileges configured by default are:
 
@@ -79,7 +83,7 @@ A Resource Name Permission consists of three components:
 
 The `permission(perm)` function enables a variety of evaluation and transformation methods. To evaluate a collection of permissions scroll down until you hit the `permissions(perms[])` section.
 
-## allows(searchPermissions[])
+## allows(...searchPermissions[])
 
 Returns `true` if all `searchPermissions` are matched by the permission, otherwise returns `false`.
 
@@ -93,18 +97,18 @@ permission('project-1:article:read').allows('article:read'); // false
 permission('article:read,update').allows('article:read'); // true
 permission('article:crud').allows('article:read,update'); // false
 permission('article:read,update').allows('article:crud'); // false
-permission('article:read').allows(['article:read', 'article:update']); // false
-permission('article/1234:read').allows('article:read'); // false
-permission('article:read').allows('article/1234:read'); // false
+
+// Multiple permissions
 permission('article:read,update').allows('article:read', 'article:update'); // true
+permission('article:read,update').allows(['article:read', 'article:update']); // true
+permission('article:read').allows('article:read', 'article:update'); // false
 permission('article:read').allows('article:read', 'article:update'); // false
 
 // Wildcards * and **
 permission('art*:read').allows('article:read'); // true
 permission('article/*:read').allows('article/1234:read'); // true
-permission('article/*:read').allows('article:1234:read'); // false
 permission('article/1234:read').allows('article/*:read'); // false
-permission('article/*:read').allows('article:read'); // true
+permission('article/*:read').allows('article:read'); // false
 permission('article/*:read').allows('article/1234/comment:read'); // false
 permission('article/**:read').allows('article/1234/comment:read'); // true
 permission('article/**:read').allows('article/1234:comment:read'); // true
@@ -124,11 +128,11 @@ perm.path(); // "article/998"
 
 ## privileges([ privileges ])
 
-Sets or returns priviliges
+Sets or returns priviliges.
 
 `privileges` can be either an array or comma-separated string with privilege names or their bitmasks. For example, `13`, `read`, `owner`, and `read,update,3` are valid.
 
-When `privileges` are not defined method returns the bitmask of all privileges.
+When `privileges` are not defined it returns a bitmask of all privileges.
 
 ```js
 const perm = permission('article/1234:read');
@@ -221,31 +225,27 @@ permission('article:admin').mayRevoke('article/1234:read', ['article:admin']); /
 
 ## toObject()
 
-Returns an object representation of an URL permission containing three properties: `url`, `attributes` and `privileges`.
+Returns an object representation of a resource name permission containing `identifier` and `privileges`.
 
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article/*?author=user-1,user-2&flag=true:crud').toObject()
+permission('article/*:crud').toObject();
 // {
-//   path: 'article/*',
-//   attributes: {
-//     author: ['user-1', 'user-2'],
-//     flag: ['true'],
-//   },
+//   identifier: 'article/*',
 //   privileges: 15,
 // }
 ```
 
 ## toString()
 
-Returns a string representation of an URL Permission. Privileges are always represented by their bitmask.
+Returns a string representation of a resource name permission. Privileges are always represented by their bitmask.
 
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article/*?author=user-1:crud').toString()
-// 'article/*?author=user-1:15'
+permission('article/*?author=user-1:crud').toString();
+// 'article/*:15'
 ```
 
 ## clone()
@@ -255,25 +255,25 @@ Returns a clone of the permission.
 ```js
 const a = permission('article:read');
 const b = a.clone();
-a.privileges(['u']);
-b.privileges(); // ['r']
 ```
 
 Alternatively you can do this:
 
 ```js
 const a = permission('article:read');
-const b = permission(a); // Clone a
+const b = permission(a);
 ```
 
 ## validate()
 
-Static method to checks if url permission string is valid.
+Static method to check if permission string is valid.
 
 ```js
 import { permission } from 'resource-name-permissions';
 
 permission.validate('article:unknown'); // false, unknown privilege
+permission.validate('article:**:read'); // true
+permission.validate('article:test**:read'); // false
 ```
 
 ## config(options)
@@ -294,13 +294,13 @@ permission.config({
     manager: 31,
     own: 32,
     owner: 63,
-    super: 64,
-    admin: 127,
+    admin: 64,
+    administrator: 127,
   },
   grantPrivileges: {
-    manage: 15, // crud
-    owner: 63, // owner + all the rest
-    super: 127, // admin
+    manage: 16,
+    own: 32,
+    admin: 64,
   },
 });
 ```
