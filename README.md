@@ -1,6 +1,6 @@
 # Node.js Resource Name Permission
 
-This Node.js library facilitates formatting permissions for users, groups or any other security principal in the following way:
+This Node.js library facilitates formatting permissions for users, groups or any other security principal in the following format:
 
 ```
 <identifier>:<privileges>
@@ -25,18 +25,18 @@ They are inspired by [Github's OAauth Scopes](https://developer.github.com/chang
 ## Format
 
 ```
-<namespace>:<identifier>:<privileges>
+<identifier>:<privileges>
 ```
 
-A Resource Name Permission consists of three components:
+A Resource Name Permission consists of two components:
 
 1. **Identifier**.
 
-    The identifier specifies which resources the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
+    The identifier specifies which resources the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special allowed characters are `/`, `:` and `*`.
 
-    Both `/` and `:` serve the same purpose and enable you to hierarchically organize identifiers. Organizing identifiers is particularly useful in combination with wildcards. Whether you use `/` or `:` is entirely up to you, the `/` better matches URLs and a `:` mimics URNs. You can even combine the two.
+    Both `/` and `:` serve the same purpose and enable you to hierarchically organize identifier names. Organizing identifiers is particularly useful in combination with wildcards. Whether you use `/` and/or `:` is entirely up to you.
 
-    The `*` wildcard matches zero or any characters excluding `/` and `:`, whereas `**` matches zero or any characters including `/` and `:`.
+    The `*` wildcard matches zero or any characters excluding `/` and `:`, whereas `**` matches zero or any characters including `/` and `:`. The `**` is only valid when preceded and followed by a `/`, `:` or at the start/end of the identifier. A single wildcard `*` can be used anywhere within an identifier string.
 
     For example, to read a user comment with id `article/1234/comments/54` one of the following would grant access:
 
@@ -57,11 +57,9 @@ A Resource Name Permission consists of three components:
     article/*:read
     ```
 
-    Note that `**` is only valid when preceded and followed by a `/`, `:` or at the start of the permission. A normal wildcard `*` can be used anywhere within an identifier string.
-
 2. **Privileges**.
 
-    Privileges specify which operations are allowed on a resource. You can either specify these as a comma-separated set of names, a bitmask, or a combination thereof (e.g. `create,read,update,delete`, `15` and `crud` are all equivalent). Privileges are fully customizable.
+    Privileges specify which operations are allowed on a resource. You can either specify these as a comma-separated set of names, a bitmask, or a combination thereof. For example, `create,read,update,delete`, `15` and `crud` are all equivalent. Privileges are fully customizable.
 
     The privileges configured by default are:
 
