@@ -40,7 +40,7 @@ export default (permission) => {
   }
 
   // Check if string contains privilege delimiter
-  const privilegeDelimiterIndex = permission.lastIndexOf(':');
+  const privilegeDelimiterIndex = permission.lastIndexOf('?');
   if (privilegeDelimiterIndex <= 0) { // 0 or -1 are both invalid
     return false;
   }
@@ -52,7 +52,7 @@ export default (permission) => {
   }
 
   // A multistar must be preceded and followed by a `:`, `/` or no charachters at all
-  if (/\*\*[^:/]/.test(identifier)) return false;
+  if (/\*\*[^:/?]/.test(identifier)) return false;
   if (/[^:/]\*\*/.test(identifier)) return false;
 
   // Check if all privileges are valid aliases, action names or identifiers

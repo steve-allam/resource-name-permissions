@@ -44,15 +44,15 @@ export default (pattern) => {
         // If there are multiple stars immediately preceded and followed by a `/`
         // or `:` it is a valid globstar
         if (multipleStars
-          && (!prev || prev === '/' || prev === ':')
-          && (!next || next === '/' || next === ':'))
+          && (!prev || prev === '/' || prev === ':' || prev === '?')
+          && (!next || next === '/' || next === ':' || next === '?'))
         {
           // Match zero or more segments
-          result += '([^/:]*(/|:|$))*';
-          i += 1; // Move past "/" or ":"
+          result += '([^/:?]*(/|:|\\?|$))*';
+          i += 1; // Move past `/`, `:` or `?`
         } else {
-          // Match a normal glob, that is any character except `/`, `:` and `**`
-          result += '((?!(\\*\\*|/|:)).)*';
+          // Match a normal glob, that is any character except `/`, `:`, `?` and `**`
+          result += '((?!(\\*\\*|/|:|\\?)).)*';
         }
         break;
       }

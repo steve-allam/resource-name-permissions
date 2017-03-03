@@ -1,17 +1,17 @@
-# Node.js Resource Name Permission
+# Node.js Resource Name Permissions
 
-This Node.js library facilitates formatting permissions for users, groups or any other security principal in the following format:
+This Node.js library facilitates formatting permissions for users, groups or other security principals in the following format:
 
 ```
-<identifier>:<privileges>
+<identifier>?<privileges>
 ```
 
-**For example:**
+**Example:**
 
 ```js
 import { permission } from 'resource-name-permissions';
 
-if (!permission('us-east-1:article:read,create').allows('us-east-1:article:read')) {
+if (!permission('us-east-1:article?read,create').allows('us-east-1:article?read')) {
   throw new Error('Not allowed here!');
 }
 ```
@@ -25,14 +25,14 @@ They are inspired by [Github's OAauth Scopes](https://developer.github.com/chang
 ## Format
 
 ```
-<identifier>:<privileges>
+<identifier>?<privileges>
 ```
 
-A Resource Name Permission consists of two components:
+A Resource Name Permission consists of two components, an identifier and privilege(s).
 
 1. **Identifier**
 
-    The identifier specifies which resource(s) the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
+    The identifier specifies which entitie(s) the permission applies to. Valid characters are `a-Z`, `0-9`, `-`, `_`, `.` and `+`. Special characters are `/`, `:` and `*`.
 
     Both `/` and `:` serve the same purpose and enable you to hierarchically organize identifier names. Organizing identifiers is particularly useful in combination with wildcards. Whether you use `/` and/or `:` is entirely up to you.
 
@@ -41,20 +41,20 @@ A Resource Name Permission consists of two components:
     For example, to read a user comment with identifier `article/1234/comments/54` one of the following would grant access:
 
     ```
-    article/1234/comments/54:read
-    article/1234/comments/54:admin
-    article/*/comment/*:read
-    article/*/*/*:read
-    article/**:read
-    **:read
+    article/1234/comments/54?read
+    article/1234/comments/54?admin
+    article/*/comment/*?read
+    article/*/*/*?read
+    article/**?read
+    **?read
     ```
 
     These will NOT grant access:
 
     ```
-    article:1234:comments:54:read
-    article/1234/comments/54:update
-    article/*:read
+    article:1234:comments:54?read
+    article/1234/comments/54?update
+    article/*?read
     ```
 
 2. **Privileges**
@@ -89,27 +89,27 @@ Returns `true` if all `searchPermissions` are matched by the permission, otherwi
 import { permission } from 'resource-name-permissions';
 
 // Basic examples
-permission('article:read').allows('article:read'); // true
-permission('project-1:article:read').allows('project-1:article:read'); // true
-permission('project-1:article:read').allows('article:read'); // false
-permission('article:read,update').allows('article:read'); // true
-permission('article:crud').allows('article:read,update'); // false
-permission('article:read,update').allows('article:crud'); // false
+permission('article?read').allows('article?read'); // true
+permission('project-1:article?read').allows('project-1:article?read'); // true
+permission('project-1:article?read').allows('article?read'); // false
+permission('article?read,update').allows('article?read'); // true
+permission('article?crud').allows('article?read,update'); // false
+permission('article?read,update').allows('article?crud'); // false
 
 // Multiple permissions
-permission('article:read,update').allows('article:read', 'article:update'); // true
-permission('article:read,update').allows(['article:read', 'article:update']); // true
-permission('article:read').allows('article:read', 'article:update'); // false
-permission('article:read').allows('article:read', 'article:update'); // false
+permission('article?read,update').allows('article?read', 'article?update'); // true
+permission('article?read,update').allows(['article?read', 'article?update']); // true
+permission('article?read').allows('article?read', 'article?update'); // false
+permission('article?read').allows('article?read', 'article?update'); // false
 
 // Wildcards * and **
-permission('art*:read').allows('article:read'); // true
-permission('article/*:read').allows('article/1234:read'); // true
-permission('article/1234:read').allows('article/*:read'); // false
-permission('article/*:read').allows('article:read'); // false
-permission('article/*:read').allows('article/1234/comment:read'); // false
-permission('article/**:read').allows('article/1234/comment:read'); // true
-permission('article/**:read').allows('article/1234:comment:read'); // true
+permission('art*?read').allows('article?read'); // true
+permission('article/*?read').allows('article/1234?read'); // true
+permission('article/1234?read').allows('article/*?read'); // false
+permission('article/*?read').allows('article?read'); // false
+permission('article/*?read').allows('article/1234/comment?read'); // false
+permission('article/**?read').allows('article/1234/comment?read'); // true
+permission('article/**?read').allows('article/1234:comment?read'); // true
 ```
 
 ## identifier([ identifier ])
@@ -117,7 +117,7 @@ permission('article/**:read').allows('article/1234:comment:read'); // true
 Gets or sets the permission identifier.
 
 ```js
-const perm = permission('article/1234/comment/21:read');
+const perm = permission('article/1234/comment/21?read');
 
 perm.identifier(); // "article/1234/comment/21"
 perm.path('article/998');
@@ -133,7 +133,7 @@ Sets or returns priviliges.
 When `privileges` are not defined it returns a bitmask of all privileges.
 
 ```js
-const perm = permission('article/1234:read');
+const perm = permission('article/1234?read');
 
 perm.privileges(); // 1
 perm.privileges('crud,own');
@@ -149,7 +149,7 @@ Return `true` when permission has specified privilege(s).
 `privileges` can be either an array or comma-separated string with privilege names or their bitmasks.
 
 ```js
-const perm = permission('article/1234:crud');
+const perm = permission('article/1234?crud');
 
 perm.hasPrivilege('read'); // true
 perm.hasPrivilege(['read', 'create', 'update']); // true
@@ -170,7 +170,7 @@ Gets array with privilege names that enable granting privileges.
 Returns empty array when none of permission's privileges are grant privileges.
 
 ```js
-const perm = permission('article/1234:read,manage,64');
+const perm = permission('article/1234?read,manage,64');
 
 perm.grantPrivileges(); // ['manage', 'admin']
 ```
@@ -194,31 +194,29 @@ The grantor/grantee privileges can be customized using `permission.config()`.
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article:manage').mayGrant('article:read', []); // true
-permission('article:manage').mayGrant('article:read', ['article:delete']); // true
-permission('article:manage').mayGrant('article:read', ['article:admin']); // true
-permission('article:manage').mayGrant('article:manage', ['article:manage']); // false
-permission('article:manage').mayGrant('article:read', ['unrelated:admin']); // true
+permission('article?manage').mayGrant('article?read', []); // true
+permission('article?manage').mayGrant('article?read', ['article?delete']); // true
+permission('article?manage').mayGrant('article?read', ['article?admin']); // true
+permission('article?manage').mayGrant('article?manage', ['article?manage']); // false
+permission('article?manage').mayGrant('article?read', ['unrelated?admin']); // true
 
-permission('article:admin').mayGrant('article/1234:read', ['article:manage']); // true
-permission('article:admin').mayGrant('article/1234:read', ['article:admin']); // true
+permission('article?admin').mayGrant('article/1234?read', ['article?manage']); // true
+permission('article?admin').mayGrant('article/1234?read', ['article?admin']); // true
 ```
 
 ## mayRevoke(permission [, granteePermissions])
 
 Returns `true` if permission allows revoking `permission` to grantee.
 
-
-
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article:manage').mayRevoke('article:read', []); // true
-permission('article:manage').mayRevoke('article:read', ['article:admin']); // false
-permission('article:manage').mayRevoke('article:manage', ['article:manage']); // false
+permission('article?manage').mayRevoke('article?read', []); // true
+permission('article?manage').mayRevoke('article?read', ['article?admin']); // false
+permission('article?manage').mayRevoke('article?manage', ['article?manage']); // false
 
-permission('article:admin').mayRevoke('article/1234:read', ['article:manage']); // true
-permission('article:admin').mayRevoke('article/1234:read', ['article:admin']); // true
+permission('article?admin').mayRevoke('article/1234?read', ['article?manage']); // true
+permission('article?admin').mayRevoke('article/1234?read', ['article?admin']); // true
 ```
 
 ## toObject()
@@ -228,7 +226,7 @@ Returns an object representation of a resource name permission containing `ident
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article/*:crud').toObject();
+permission('article/*?crud').toObject();
 // {
 //   identifier: 'article/*',
 //   privileges: 15,
@@ -242,7 +240,7 @@ Returns a string representation of a resource name permission. Privileges are al
 ```js
 import { permission } from 'resource-name-permissions';
 
-permission('article/*?author=user-1:crud').toString();
+permission('article/*?crud').toString();
 // 'article/*:15'
 ```
 
@@ -251,14 +249,14 @@ permission('article/*?author=user-1:crud').toString();
 Returns a clone of the permission.
 
 ```js
-const a = permission('article:read');
+const a = permission('article?read');
 const b = a.clone();
 ```
 
 Alternatively you can do this:
 
 ```js
-const a = permission('article:read');
+const a = permission('article?read');
 const b = permission(a);
 ```
 
@@ -270,8 +268,9 @@ Static method to check if permission string is valid.
 import { permission } from 'resource-name-permissions';
 
 permission.validate('article:unknown'); // false, unknown privilege
-permission.validate('article:**:read'); // true
-permission.validate('article:test**:read'); // false
+permission.validate('article:**?read'); // true
+permission.validate('article:test**?read'); // false
+permission.validate('article:test*?read'); // true
 ```
 
 ## config(options)
@@ -328,12 +327,12 @@ permission.config({
   },
 });
 
-permission('article:x').mayGrant('article:a'); // true
-permission('article:x').mayGrant('article:a', ['article:x']); // false
-permission('article:y').mayGrant('article:a', ['article:x']); // true
-permission('article:y').mayGrant('article:x', ['article:x']); // true
-permission('article:y').mayGrant('article:a', ['article:y']); // false
-permission('article:z').mayGrant('article:a', ['article:z']); // true
+permission('article?x').mayGrant('article?a'); // true
+permission('article?x').mayGrant('article?a', ['article?x']); // false
+permission('article?y').mayGrant('article?a', ['article?x']); // true
+permission('article?y').mayGrant('article?x', ['article?x']); // true
+permission('article?y').mayGrant('article?a', ['article?y']); // false
+permission('article?z').mayGrant('article?a', ['article?z']); // true
 ```
 
 Notice the last example where `z` may grant a permission to a grantee with `z`, whereas an `y` may not grant the same permission to another `y`. We'll leave it to you to figure out why.
@@ -353,8 +352,8 @@ This method intelligently handles privileges.
 ```js
 import { permissions } from 'resource-name-permissions';
 
-permissions('article:read', 'article:update').allows('article:ru'); // true
-permissions('article/*:read', 'article/*:update').allows('article/1234:ru'); // true
+permissions('article?read', 'article?update').allows('article?ru'); // true
+permissions('article/*?read', 'article/*?update').allows('article/1234?ru'); // true
 ```
 
 ## mayGrant(newPermission [, granteePermissions])
@@ -366,7 +365,7 @@ For a better understanding of how granting work, see `permission().mayGrant(...)
 ```js
 import { permissions } from 'resource-name-permissions';
 
-permission('article:read', 'article:m').mayGrant('article:read'); // true
+permission('article?read', 'article?m').mayGrant('article?read'); // true
 ```
 
 ## mayRevoke(removePermission [, granteePermissions])

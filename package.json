@@ -1,6 +1,6 @@
 {
   "name": "resource-name-permissions",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Node.js library for Resource Name Permissions",
   "main": "lib/index.js",
   "author": "Niels Krijger <niels@kryger.nl>",

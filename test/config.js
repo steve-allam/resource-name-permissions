@@ -54,14 +54,14 @@ describe('config(...)', function () {
         read: 1,
         create: 2,
       });
-      expect(permission('/articles:2').allows('/articles:create')).to.equal(true);
-      const func = () => permission('/articles:delete').allows('/articles:delete');
+      expect(permission('articles?2').allows('articles?create')).to.equal(true);
+      const func = () => permission('articles?delete').allows('articles?delete');
       expect(func).to.throw(/Privilege 'delete' does not exist/);
     });
   });
 
   it('should not affect existing instances', () => {
-    const perm = permission('/articles:crud,admin');
+    const perm = permission('articles?crud,admin');
     permission.config({
       privileges: {
         read: 1,

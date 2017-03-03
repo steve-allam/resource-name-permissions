@@ -125,7 +125,7 @@ export default class RNPermission {
    * Parses a Resource Name Permission and returns an object with all
    * properties.
    *
-   * For example, `articles/**:read,update` returns the following:
+   * For example, `articles/**?read,update` returns the following:
    * ```
    * {
    *   identifier: 'article/**',
@@ -144,9 +144,9 @@ export default class RNPermission {
     };
 
     // Determine identifier and privileges
-    const delimiterIndex = permission.lastIndexOf(':');
+    const delimiterIndex = permission.lastIndexOf('?');
     if (delimiterIndex === -1) {
-      throw new Error('Permission must contain at least 1 privilege delimited by ":"');
+      throw new Error(`Permission '${permission}' must contain at least 1 privilege delimited by '?'`);
     }
     result.identifier = permission.substring(0, delimiterIndex);
     result.privileges = this._parsePrivileges(permission.substring(delimiterIndex + 1));
@@ -290,6 +290,6 @@ export default class RNPermission {
    * Returns a string representation of a Resource Name Permission.
    */
   toString() {
-    return `${this.identifier()}:${this.privileges()}`;
+    return `${this.identifier()}?${this.privileges()}`;
   }
 }
