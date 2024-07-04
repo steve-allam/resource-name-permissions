@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import config from './config';
-import { isNumeric } from './util';
+import config from './config.js';
+import { isNumeric } from './util.js';
 
 /**
  * Validates privilege string.

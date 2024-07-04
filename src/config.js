@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { isNumeric } from './util';
+import { isNumeric } from './util.js';
 
 // Contains default global config
 const defaultConfig = {

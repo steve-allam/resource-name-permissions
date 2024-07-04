@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import globToRegex from './globToRegex';
-import config from './config';
-import { isNumeric } from './util';
+import globToRegex from './globToRegex.js';
+import config from './config.js';
+import { isNumeric } from './util.js';
 
 /**
  * Models a permission string.
@@ -203,6 +203,7 @@ export default class RNPermission {
   matchIdentifier(permission) {
     let identifier;
     if (_.isString(permission)) {
+      if (!permission.match(/\?/)) { permission += '?1'; }
       identifier = (new RNPermission(permission)).identifier();
     } else {
       identifier = permission.identifier();

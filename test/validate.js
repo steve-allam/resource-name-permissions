@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { permission } from '../src/index';
+import { permission } from '../src/index.js';
 
 describe('validate(...)', function () {
   this.slow(10);

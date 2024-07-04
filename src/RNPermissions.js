@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import RNPermission from './RNPermission';
+import RNPermission from './RNPermission.js';
 
 /**
  * Models multiple permissions.
@@ -22,6 +22,17 @@ export default class RNPermissions {
     }
     return this._permissions;
   }
+
+  /**
+   * Returns a privilege name given a number
+   */
+
+  privilegeToName(privilege)
+  {
+    var preverse = _.invert(privilege._config.privileges);
+    return preverse[''+privilege._privileges];
+  }
+  
 
   /**
    * Returns `true` when all specified permissions are covered by at least one
@@ -50,6 +61,57 @@ export default class RNPermissions {
       return permission.privileges() === 0;
     });
   }
+
+  /**
+   * Returns an array of those permissions that 'allow' the resource
+   */
+
+  allowsBy(...perms) 
+  {
+    // Transform each permission string to an object.
+    var permissions = _.flatten(perms).map(e => new RNPermission(e));
+
+    // For each permission remove any privilege that is covered by any of our
+    // own permissions.
+    var ourPermissions = this.permissions();
+    var ourMatches = [];
+    for (var index in permissions) 
+    {
+
+      var i = 0;
+      while (permissions[index].privileges() > 0 && i < ourPermissions.length) {
+        if (ourPermissions[i].matchIdentifier(permissions[index])) {
+          // Add to matches array
+          if (permissions[index].privileges() & ourPermissions[i].privileges()) { ourMatches.push(ourPermissions[i].identifier()+'?'+this.privilegeToName(ourPermissions[i])); }
+        }
+        i += 1;
+      }
+    };
+    return ourMatches;
+  }
+
+  /**
+   * Returns `true` if there are any child permissions on the given identifier
+   *
+   */
+
+  hasChildren(identifier) 
+  {
+
+    var  myPerm = new RNPermission(identifier+'/**?1');
+    // Go through permissions
+    var ourPermissions = this.permissions();
+    var i = 0;
+    while (i < ourPermissions.length) 
+    {
+      if (ourPermissions[i].matchIdentifier(identifier+'/**') ||
+          myPerm.matchIdentifier(ourPermissions[i].identifier())) { return true; }
+      i += 1;
+    }
+    return false;
+
+  }
+
 
   /**
    * Returns `true` if any or a combination of this collection's permissions

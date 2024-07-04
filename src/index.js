@@ -1,7 +1,7 @@
-import RNPermission from './RNPermission';
-import RNPermissions from './RNPermissions';
-import config from './config';
-import validate from './validate';
+import RNPermission from './RNPermission.js';
+import RNPermissions from './RNPermissions.js';
+import config from './config.js';
+import validate from './validate.js';
 
 function permission(perm) {
   return new RNPermission(perm);
