@@ -1,5 +1,7 @@
 # Node.js Resource Name Permissions
 
+This is a fork from the original resourse-name-permissions, which fixes a bug and adds a couple more functions.  The module is useful in cases where you have hierarchical resources which need permissions at one or more levels.
+
 This Node.js library facilitates formatting permissions for users, groups or other security principals in the following format:
 
 ```
@@ -354,6 +356,35 @@ import { permissions } from 'resource-name-permissions';
 
 permissions('article?read', 'article?update').allows('article?ru'); // true
 permissions('article/*?read', 'article/*?update').allows('article/1234?ru'); // true
+```
+
+## allowsBy(searchPermissions[]) \*\*new\*\*
+
+Returns an array containing all of the permissions that would allow the `searchpermissions`. An empty array is returned if none would match.
+
+This method intelligently handles privileges.
+
+```js
+import { permissions } from 'resource-name-permissions';
+
+permissions('article?read', 'article?update').allowsBy('article?read'); // ['article?read', 'article?update']
+permissions('article/*?read', 'article/*?update').allowsBy('article/1234?update'); // ['article/*?update']
+```
+
+## hasChildren(identifier)  \*\*new\*\*
+
+Returns `true` if there are permissions that can be called 'children' of the `identifier`.
+This method can be used to manage permissions, perhaps in an interface that works down a known hierarchy to only show those objects that a user has any permissions to.
+
+
+```js
+import { permissions } from 'resource-name-permissions';
+
+var perms = []'server/appserver1/database/users?read', 'server/appserver2/database/x?update']
+permissions(perms).hasChildren('server'); // true
+permissions(perms).hasChildren('server/appserver2/database'); // true
+permissions(perms).hasChildren('server/appserver3'); // false
+
 ```
 
 ## mayGrant(newPermission [, granteePermissions])
