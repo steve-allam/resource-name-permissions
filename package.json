@@ -1,6 +1,6 @@
 {
-  "name": "@steve-allam/resource-name-permissions",
-  "version": "3.0.0",
+  "name": "@allams/resource-name-permissions",
+  "version": "3.0.1",
   "description": "Node.js library for Resource Name Permissions",
   "main": "lib/index.js",
   "author": "Steve Allam",
@@ -22,9 +22,10 @@
     "mocha": "^10.6.0"
   },
   "scripts": {
-    "cpsrc": "copyfiles src/*.js lib",
+    "cpsrc": "copyfiles -u 1 src/*.js lib",
     "test": "mocha",
-    "publish": "npx eslint src/*.js && npm run cpsrc"
+    "build": "npx eslint src/*.js && npm run cpsrc",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "lodash": "^4.17.21"
