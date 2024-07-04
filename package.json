@@ -1,6 +1,6 @@
 {
   "name": "@allams/resource-name-permissions",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Node.js library for Resource Name Permissions",
   "main": "lib/index.js",
   "author": "Steve Allam",
